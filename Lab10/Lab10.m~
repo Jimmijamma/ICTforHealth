@@ -19,19 +19,10 @@ for ii=1:M
     EMIT_HAT(ii,:)=(EMIT_HAT(ii,:))/sum((EMIT_HAT(ii,:)));
 end
 
-[ESTTRa,ESTEMITa]=hmmtrain(za,TRANS_HAT,EMIT_HAT,'Tolerance',1e-3,'Maxiterations',200);
-save('ESTTRa.mat','ESTTRa');
-save('ESTEMITa.mat','ESTEMITa');
+[ESTTRa,ESTEMITa]=hmmtrain(za,TRANS_HAT,EMIT_HAT,'Tolerance',1e-3,'Maxiterations',100);
+save
 [ESTTRe,ESTEMITe]=hmmtrain(ze,TRANS_HAT,EMIT_HAT,'Tolerance',1e-3,'Maxiterations',100);
-save('ESTTRe.mat','ESTTRe');
-save('ESTEMITe.mat','ESTEMITe');
 [ESTTRi,ESTEMITi]=hmmtrain(zi,TRANS_HAT,EMIT_HAT,'Tolerance',1e-3,'Maxiterations',100);
-save('ESTTRi.mat','ESTTRi');
-save('ESTEMITi.mat','ESTEMITi');
 [ESTTRo,ESTEMITo]=hmmtrain(zo,TRANS_HAT,EMIT_HAT,'Tolerance',1e-3,'Maxiterations',100);
-save('ESTTRo.mat','ESTTRo');
-save('ESTEMITo.mat','ESTEMITo');
 [ESTTRu,ESTEMITu]=hmmtrain(zu,TRANS_HAT,EMIT_HAT,'Tolerance',1e-3,'Maxiterations',100);
-save('ESTTRu.mat','ESTTRu');
-save('ESTEMITu.mat','ESTEMITu');
 
