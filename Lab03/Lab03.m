@@ -35,14 +35,11 @@ y2=y(find(class_id==2),:); % patients with arrhythmias
 n_healthy=sum(class_id==1);
 n_ill=sum(class_id==2);
 
-%% Performing PCA
-
-
 % define the probabilities to fall in either one of the two regions
 pi_1=n_healthy/N; 
 pi_2=n_ill/N;
 
-%---perforiming PCA----%
+%% Performing PCA
 
 R_y=y'*y/N;
 [U, E] = eig(R_y);
@@ -96,8 +93,20 @@ p_false_negative=100*n_false_negative/n_ill; % 12.07
 
 p_strike=100*(n_true_positive+n_true_negative)/N % 91,15
 
+figure
+hold on
+b=bar(1,p_strike);
+b2=bar(2,p_true_positive,'r');
+b3=bar(3,p_true_negative,'g');
+b4=bar(4,p_false_positive,'y');
+b5=bar(5,p_false_negative,'m');
+
+title('Classification Results: Minimum distance criterion (with PCA)')
+legend('pStrike','pTruePositive','pTrueNegative','pFalsePositive','pFalseNegative')
+
 
 %% Bayes criterion
+
 
 onevar=ones(N,1);
 
@@ -123,9 +132,20 @@ p_false_negative_z=100*n_false_negative_z/n_ill; % 15,4589
 
 p_strike_z=100*(n_true_positive_z+n_true_negative_z)/N % 90,70
 
-mses=[p_strike,p_true_positive,p_true_negative,p_false_positive,p_false_negative;p_strike_z,p_true_positive_z,p_true_negative_z,p_false_positive_z,p_false_negative_z]
+% mses=[p_strike,p_true_positive,p_true_negative,p_false_positive,p_false_negative;p_strike_z,p_true_positive_z,p_true_negative_z,p_false_positive_z,p_false_negative_z]
+% figure
+% % c = categorical({'Minimum Distance' 'Bayesian criterion'});
+% b=bar(mses);
+% title('Minimum distance vs MAP criterion')
+% legend('pStrike','pTruePositive','pTrueNegative','pFalseePositive','pFalseNegative')
+
 figure
-% c = categorical({'Minimum Distance' 'Bayesian criterion'});
-b=bar(mses);
-title('Results')
-legend('pStrike','pTruePositive','pTrueNegative','pFalseePositive','pFalseNegative')
+hold on
+b=bar(1,p_strike_z);
+b2=bar(2,p_true_positive_z,'r');
+b3=bar(3,p_true_negative_z,'g');
+b4=bar(4,p_false_positive_z,'y');
+b5=bar(5,p_false_negative_z,'m');
+
+title('Classification Results: Bayesian criterion')
+legend('pStrike','pTruePositive','pTrueNegative','pFalsePositive','pFalseNegative')

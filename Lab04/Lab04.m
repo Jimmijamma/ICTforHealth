@@ -1,10 +1,10 @@
+%%  Data Preparation 
+
 clear all
 close all
 clc
 
 load('arrhythmia.mat')
-
-%% ----- Data Preparation ----------- %%
 
 A=arrhythmia;
 
@@ -96,11 +96,7 @@ n_false_positive=length(find(class_id(ind_2)==1));
 n_true_negative=length(find(class_id(ind_1)==1));
 n_true_positive=length(find(class_id(ind_2)==2));
 
-% calculating statistics
-% (we can see that the clustering algorithm is good to divide in some way
-% ill patients from healthy patients. In fact we have an high true negative
-% rate (79,7%). Despite that, many healthy patients are considered ill
-% (96,3% false positive)
+
 p_true_positive=100*n_true_positive/n_ill; 
 p_true_negative=100*n_true_negative/n_healthy; 
 p_false_positive=100*n_false_positive/n_healthy; 
@@ -110,7 +106,6 @@ p_strike=100*(n_true_positive+n_true_negative)/N
 
 %mses=[p_strike,p_true_positive,p_true_negative,p_false_positive,p_false_negative;p_strike_z,p_true_positive_z,p_true_negative_z,p_false_positive_z,p_false_negative_z]
 figure
-% c = categorical({'Minimum Distance' 'Bayesian criterion'});
 hold on
 b=bar(1,p_strike);
 b2=bar(2,p_true_positive,'r');
@@ -118,7 +113,7 @@ b3=bar(3,p_true_negative,'g');
 b4=bar(4,p_false_positive,'y');
 b5=bar(5,p_false_negative,'m');
 
-title('Results')
+title('Hard K-means with warm start')
 legend('pStrike','pTruePositive','pTrueNegative','pFalseePositive','pFalseNegative')
 
 
@@ -190,11 +185,6 @@ n_false_positive=length(find(class_id(ind_2)==1));
 n_true_negative=length(find(class_id(ind_1)==1));
 n_true_positive=length(find(class_id(ind_2)==2));
 
-% calculating statistics
-% (we can see that the clustering algorithm is good to divide in some way
-% ill patients from healthy patients. In fact we have an high true negative
-% rate (79,7%). Despite that, many healthy patients are considered ill
-% (96,3% false positive)
 p_true_positive=100*n_true_positive/n_ill; 
 p_true_negative=100*n_true_negative/n_healthy; 
 p_false_positive=100*n_false_positive/n_healthy; 
@@ -204,7 +194,6 @@ p_strike=100*(n_true_positive+n_true_negative)/N
 
 %mses=[p_strike,p_true_positive,p_true_negative,p_false_positive,p_false_negative;p_strike_z,p_true_positive_z,p_true_negative_z,p_false_positive_z,p_false_negative_z]
 figure
-% c = categorical({'Minimum Distance' 'Bayesian criterion'});
 hold on
 b=bar(1,p_strike);
 b2=bar(2,p_true_positive,'r');
@@ -212,11 +201,11 @@ b3=bar(3,p_true_negative,'g');
 b4=bar(4,p_false_positive,'y');
 b5=bar(5,p_false_negative,'m');
 
-title('Results')
+title('Hard K-means with cold start')
 legend('pStrike','pTruePositive','pTrueNegative','pFalseePositive','pFalseNegative')
 
 
-%% --------- Soft K-means algorithm ---------- %%
+%% Soft K-means algorithm 
 
 % 
 % % starting conditions

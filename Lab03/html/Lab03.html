@@ -1,0 +1,372 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Lab03</title><meta name="generator" content="MATLAB 9.0"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-05-05"><meta name="DC.source" content="Lab03.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Data preparation</a></li><li><a href="#2">Performing PCA</a></li><li><a href="#3">Minimum Distance Criterion</a></li><li><a href="#4">Bayes criterion</a></li></ul></div><h2>Data preparation<a name="1"></a></h2><pre class="codeinput">clear <span class="string">all</span>
+close <span class="string">all</span>
+clc
+
+load(<span class="string">'arrhythmia.mat'</span>)
+
+A=arrhythmia;
+
+A(:, find(sum(abs(A)) == 0)) = []; <span class="comment">% we erase the zero columns</span>
+
+class_id=A(:,end); <span class="comment">% last vector of the matrix</span>
+class_id(find(class_id&gt;1))=2; <span class="comment">% all the values higher than 1 are put equal to 2</span>
+y=A;
+y(:,end)=[]; <span class="comment">% we put in y all the features but the last one</span>
+[N,F]=size(y);
+
+<span class="comment">%normalizing y</span>
+mean_y=mean(y,1);
+stdv_y=std(y,1);
+
+o=ones(N,1);<span class="comment">% o is a column vector</span>
+y=(y-o*mean_y)./(o*stdv_y);<span class="comment">% y is normalized</span>
+
+mean_y=mean(y,1); <span class="comment">% checking that y matrix is properly normalized</span>
+var_y=var(y,1);
+
+save(<span class="string">'arrhythmia_norm.mat'</span>,<span class="string">'y'</span>)
+
+<span class="comment">% we divide patients in two classes: with and without arrhythmia</span>
+y1=y(find(class_id==1),:); <span class="comment">% patients without arrhythmia</span>
+y2=y(find(class_id==2),:); <span class="comment">% patients with arrhythmias</span>
+
+n_healthy=sum(class_id==1);
+n_ill=sum(class_id==2);
+
+<span class="comment">% define the probabilities to fall in either one of the two regions</span>
+pi_1=n_healthy/N;
+pi_2=n_ill/N;
+</pre><h2>Performing PCA<a name="2"></a></h2><pre class="codeinput">R_y=y'*y/N;
+[U, E] = eig(R_y);
+
+P = sum(diag(E));
+percentage = 0.999; <span class="comment">% we set the percentage of information that we want to keep</span>
+new_P = percentage * P;
+
+cumulative_P = cumsum(diag(E)); <span class="comment">% function that evaluates the cumulative</span>
+                                <span class="comment">% sum of each element of the diagonal of A</span>
+L = length(find(cumulative_P&lt;new_P)); <span class="comment">% determines the first L features</span>
+                                <span class="comment">% that contribut to obtain new_P amount</span>
+                                <span class="comment">% of "information"</span>
+
+U_L = U(:,1:L); <span class="comment">% we only consider the first L features</span>
+
+Z = y * U_L;
+mean_Z=mean(Z,1); <span class="comment">% Z is zero mean</span>
+Z=Z./(o*sqrt(var(Z)));  <span class="comment">% we normalize Z</span>
+</pre><h2>Minimum Distance Criterion<a name="3"></a></h2><pre class="codeinput"><span class="comment">% we divide the two classes</span>
+z1=Z(find(class_id==1), :);
+z2=Z(find(class_id==2), :);
+
+<span class="comment">% finding the representative of the two classes</span>
+w1=mean(z1,1);
+w2=mean(z2,1);
+
+wmeans=[w1;w2];
+enZ=diag(Z*Z'); <span class="comment">% |Z(n)|^2</span>
+enW=diag(wmeans*wmeans'); <span class="comment">% |w1|^2 and |w2|^2</span>
+dotprod_2=Z*wmeans'; <span class="comment">% matrix with the dot product between each Z(n) and each w</span>
+[U2,V2]=meshgrid(enW,enZ);
+dist_z=U2+V2-2*dotprod_2; <span class="comment">% |y(n)|^2+|x(n)|^2-2y(n)x(k)=|y(n)-x(k)|^2</span>
+
+
+yhat_1=find(dist_z(:,1)&lt;=dist_z(:,2));
+yhat_2=find(dist_z(:,1)&gt;dist_z(:,2));
+
+n_false_negative=length(find(class_id(yhat_1)==2));
+n_false_positive=length(find(class_id(yhat_2)==1));
+n_true_negative=length(find(class_id(yhat_1)==1));
+n_true_positive=length(find(class_id(yhat_2)==2));
+
+p_true_positive=100*n_true_positive/n_ill; <span class="comment">% 87.92</span>
+p_true_negative=100*n_true_negative/n_healthy; <span class="comment">% 93.87</span>
+p_false_positive=100*n_false_positive/n_healthy; <span class="comment">% 6.12</span>
+p_false_negative=100*n_false_negative/n_ill; <span class="comment">% 12.07</span>
+
+p_strike=100*(n_true_positive+n_true_negative)/N <span class="comment">% 91,15</span>
+
+figure
+hold <span class="string">on</span>
+b=bar(1,p_strike);
+b2=bar(2,p_true_positive,<span class="string">'r'</span>);
+b3=bar(3,p_true_negative,<span class="string">'g'</span>);
+b4=bar(4,p_false_positive,<span class="string">'y'</span>);
+b5=bar(5,p_false_negative,<span class="string">'m'</span>);
+
+title(<span class="string">'Classification Results: Minimum distance criterion (with PCA)'</span>)
+legend(<span class="string">'pStrike'</span>,<span class="string">'pTruePositive'</span>,<span class="string">'pTrueNegative'</span>,<span class="string">'pFalsePositive'</span>,<span class="string">'pFalseNegative'</span>)
+</pre><pre class="codeoutput">
+p_strike =
+
+   91.1504
+
+</pre><img vspace="5" hspace="5" src="Lab03_01.png" style="width:560px;height:420px;" alt=""> <h2>Bayes criterion<a name="4"></a></h2><pre class="codeinput">onevar=ones(N,1);
+
+pis=zeros(1,2);
+pis(1)=pi_1;
+pis(2)=pi_2;
+
+bayes_dist=dist_z-2*onevar*log(pis);
+
+<span class="comment">% taking the decision</span>
+zhat_1=find(bayes_dist(:,1)&lt;=bayes_dist(:,2));
+zhat_2=find(bayes_dist(:,1)&gt;bayes_dist(:,2));
+
+n_true_negative_z=length(find(class_id(zhat_1)==1));
+n_true_positive_z=length(find(class_id(zhat_2)==2));
+n_false_negative_z=length(find(class_id(zhat_1)==2));
+n_false_positive_z=length(find(class_id(zhat_2)==1));
+
+p_true_positive_z=100*n_true_positive_z/n_ill; <span class="comment">% 95,9184</span>
+p_true_negative_z=100*n_true_negative_z/n_healthy; <span class="comment">% 84,5411</span>
+p_false_positive_z=100*n_false_positive_z/n_healthy; <span class="comment">% 4,0816</span>
+p_false_negative_z=100*n_false_negative_z/n_ill; <span class="comment">% 15,4589</span>
+
+p_strike_z=100*(n_true_positive_z+n_true_negative_z)/N <span class="comment">% 90,70</span>
+
+<span class="comment">% mses=[p_strike,p_true_positive,p_true_negative,p_false_positive,p_false_negative;p_strike_z,p_true_positive_z,p_true_negative_z,p_false_positive_z,p_false_negative_z]</span>
+<span class="comment">% figure</span>
+<span class="comment">% % c = categorical({'Minimum Distance' 'Bayesian criterion'});</span>
+<span class="comment">% b=bar(mses);</span>
+<span class="comment">% title('Minimum distance vs MAP criterion')</span>
+<span class="comment">% legend('pStrike','pTruePositive','pTrueNegative','pFalseePositive','pFalseNegative')</span>
+
+figure
+hold <span class="string">on</span>
+b=bar(1,p_strike_z);
+b2=bar(2,p_true_positive_z,<span class="string">'r'</span>);
+b3=bar(3,p_true_negative_z,<span class="string">'g'</span>);
+b4=bar(4,p_false_positive_z,<span class="string">'y'</span>);
+b5=bar(5,p_false_negative_z,<span class="string">'m'</span>);
+
+title(<span class="string">'Classification Results: Bayesian criterion'</span>)
+legend(<span class="string">'pStrike'</span>,<span class="string">'pTruePositive'</span>,<span class="string">'pTrueNegative'</span>,<span class="string">'pFalsePositive'</span>,<span class="string">'pFalseNegative'</span>)
+</pre><pre class="codeoutput">
+p_strike_z =
+
+   90.7080
+
+</pre><img vspace="5" hspace="5" src="Lab03_02.png" style="width:560px;height:420px;" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2016a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Data preparation
+
+clear all
+close all
+clc
+
+load('arrhythmia.mat')
+
+A=arrhythmia;
+
+A(:, find(sum(abs(A)) == 0)) = []; % we erase the zero columns
+
+class_id=A(:,end); % last vector of the matrix
+class_id(find(class_id>1))=2; % all the values higher than 1 are put equal to 2 
+y=A;
+y(:,end)=[]; % we put in y all the features but the last one
+[N,F]=size(y);
+
+%normalizing y
+mean_y=mean(y,1);
+stdv_y=std(y,1);
+
+o=ones(N,1);% o is a column vector 
+y=(y-o*mean_y)./(o*stdv_y);% y is normalized
+
+mean_y=mean(y,1); % checking that y matrix is properly normalized
+var_y=var(y,1);
+
+save('arrhythmia_norm.mat','y')
+
+% we divide patients in two classes: with and without arrhythmia
+y1=y(find(class_id==1),:); % patients without arrhythmia
+y2=y(find(class_id==2),:); % patients with arrhythmias
+
+n_healthy=sum(class_id==1);
+n_ill=sum(class_id==2);
+
+% define the probabilities to fall in either one of the two regions
+pi_1=n_healthy/N; 
+pi_2=n_ill/N;
+
+%% Performing PCA
+
+R_y=y'*y/N;
+[U, E] = eig(R_y);
+
+P = sum(diag(E));
+percentage = 0.999; % we set the percentage of information that we want to keep
+new_P = percentage * P; 
+
+cumulative_P = cumsum(diag(E)); % function that evaluates the cumulative 
+                                % sum of each element of the diagonal of A 
+L = length(find(cumulative_P<new_P)); % determines the first L features 
+                                % that contribut to obtain new_P amount 
+                                % of "information"
+                                
+U_L = U(:,1:L); % we only consider the first L features
+
+Z = y * U_L;
+mean_Z=mean(Z,1); % Z is zero mean
+Z=Z./(o*sqrt(var(Z)));  % we normalize Z
+
+%% Minimum Distance Criterion
+
+% we divide the two classes
+z1=Z(find(class_id==1), :);
+z2=Z(find(class_id==2), :);
+
+% finding the representative of the two classes
+w1=mean(z1,1);
+w2=mean(z2,1);
+
+wmeans=[w1;w2];
+enZ=diag(Z*Z'); % |Z(n)|^2
+enW=diag(wmeans*wmeans'); % |w1|^2 and |w2|^2
+dotprod_2=Z*wmeans'; % matrix with the dot product between each Z(n) and each w
+[U2,V2]=meshgrid(enW,enZ);
+dist_z=U2+V2-2*dotprod_2; % |y(n)|^2+|x(n)|^2-2y(n)x(k)=|y(n)-x(k)|^2
+
+
+yhat_1=find(dist_z(:,1)<=dist_z(:,2));
+yhat_2=find(dist_z(:,1)>dist_z(:,2));
+
+n_false_negative=length(find(class_id(yhat_1)==2));
+n_false_positive=length(find(class_id(yhat_2)==1));
+n_true_negative=length(find(class_id(yhat_1)==1));
+n_true_positive=length(find(class_id(yhat_2)==2));
+
+p_true_positive=100*n_true_positive/n_ill; % 87.92
+p_true_negative=100*n_true_negative/n_healthy; % 93.87
+p_false_positive=100*n_false_positive/n_healthy; % 6.12
+p_false_negative=100*n_false_negative/n_ill; % 12.07
+
+p_strike=100*(n_true_positive+n_true_negative)/N % 91,15
+
+figure
+hold on
+b=bar(1,p_strike);
+b2=bar(2,p_true_positive,'r');
+b3=bar(3,p_true_negative,'g');
+b4=bar(4,p_false_positive,'y');
+b5=bar(5,p_false_negative,'m');
+
+title('Classification Results: Minimum distance criterion (with PCA)')
+legend('pStrike','pTruePositive','pTrueNegative','pFalsePositive','pFalseNegative')
+
+
+%% Bayes criterion
+
+
+onevar=ones(N,1);
+
+pis=zeros(1,2); 
+pis(1)=pi_1;
+pis(2)=pi_2;
+
+bayes_dist=dist_z-2*onevar*log(pis);
+
+% taking the decision
+zhat_1=find(bayes_dist(:,1)<=bayes_dist(:,2));
+zhat_2=find(bayes_dist(:,1)>bayes_dist(:,2));
+
+n_true_negative_z=length(find(class_id(zhat_1)==1));
+n_true_positive_z=length(find(class_id(zhat_2)==2));
+n_false_negative_z=length(find(class_id(zhat_1)==2));
+n_false_positive_z=length(find(class_id(zhat_2)==1));
+
+p_true_positive_z=100*n_true_positive_z/n_ill; % 95,9184
+p_true_negative_z=100*n_true_negative_z/n_healthy; % 84,5411
+p_false_positive_z=100*n_false_positive_z/n_healthy; % 4,0816
+p_false_negative_z=100*n_false_negative_z/n_ill; % 15,4589
+
+p_strike_z=100*(n_true_positive_z+n_true_negative_z)/N % 90,70
+
+% mses=[p_strike,p_true_positive,p_true_negative,p_false_positive,p_false_negative;p_strike_z,p_true_positive_z,p_true_negative_z,p_false_positive_z,p_false_negative_z]
+% figure
+% % c = categorical({'Minimum Distance' 'Bayesian criterion'});
+% b=bar(mses);
+% title('Minimum distance vs MAP criterion')
+% legend('pStrike','pTruePositive','pTrueNegative','pFalseePositive','pFalseNegative')
+
+figure
+hold on
+b=bar(1,p_strike_z);
+b2=bar(2,p_true_positive_z,'r');
+b3=bar(3,p_true_negative_z,'g');
+b4=bar(4,p_false_positive_z,'y');
+b5=bar(5,p_false_negative_z,'m');
+
+title('Classification Results: Bayesian criterion')
+legend('pStrike','pTruePositive','pTrueNegative','pFalsePositive','pFalseNegative')
+
+##### SOURCE END #####
+--></body></html>

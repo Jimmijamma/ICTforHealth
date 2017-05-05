@@ -1,10 +1,10 @@
+%% Data Preparation 
+
 clear all
 close all
 clc
 
 load('arrhythmia.mat')
-
-%% ----------- Data Preparation ----------- %%
 
 A=arrhythmia;
 
@@ -29,7 +29,7 @@ var_y=var(y,1);
 classes = sort(unique(class_id)); 
 C=length(classes);
 
-%% ---------- Hard K-Means Algorithm --------- %%
+%% Hard K-Means Algorithm 
 
 % starting conditions
 K=4; % number of classes

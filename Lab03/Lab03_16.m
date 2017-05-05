@@ -6,8 +6,6 @@ clc
 
 load('arrhythmia.mat')
 
-
-
 A=arrhythmia;
 
 A(:, find(sum(abs(A)) == 0)) = []; % we erase the zero columns
@@ -98,6 +96,17 @@ p_true_negative=100*n_true_negative/n_healthy; % 97.95
 p_false_positive=100*n_false_positive/n_healthy; % 2.04
 p_false_negative=100*n_false_negative/n_ill; % 4.83
 
+figure
+hold on
+b=bar(1,p_strike);
+b2=bar(2,p_true_positive,'r');
+b3=bar(3,p_true_negative,'g');
+b4=bar(4,p_false_positive,'y');
+b5=bar(5,p_false_negative,'m');
+
+title('Classification Results: Minimum distance criterion (with PCA, 16 classes)')
+legend('pStrike','pTruePositive','pTrueNegative','pFalsePositive','pFalseNegative')
+
 
 %% Bayes criterion
 
@@ -119,9 +128,13 @@ p_true_negative_b=100*n_true_negative_b/n_healthy; % 99.1836
 p_false_positive_b=100*n_false_positive_b/n_healthy; % 0.8163
 p_false_negative_b=100*n_false_negative_b/n_ill; % 11.5942
 
-mses=[p_strike,p_true_positive,p_true_negative,p_false_positive,p_false_negative;p_strike_bayes,p_true_positive_b,p_true_negative_b,p_false_positive_b,p_false_negative_b]
 figure
-%c = categorical({'Minimum Distance' 'Bayesian criterion'});
-b=bar(mses);
-title('Results')
-legend('pStrike','pTruePositive','pTrueNegative','pFalseePositive','pFalseNegative')
+hold on
+b=bar(1,p_strike_bayes);
+b2=bar(2,p_true_positive_b,'r');
+b3=bar(3,p_true_negative_b,'g');
+b4=bar(4,p_false_positive_b,'y');
+b5=bar(5,p_false_negative_b,'m');
+
+title('Classification Results: Bayesian criterion (16 classes)')
+legend('pStrike','pTruePositive','pTrueNegative','pFalsePositive','pFalseNegative')
