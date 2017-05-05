@@ -36,7 +36,7 @@ C = [2:0.5:5]
 
 for ii=1:length(C)
 
-    Mdl=fitcsvm(y,class_id,'BoxConstraint',C(ii),'KernelFunction','linear'); 
+    Mdl=fitcsvm(y,class_id,'BoxConstraint',C(ii)); 
     classhat=sign(y*Mdl.Beta+Mdl.Bias);
 
     n_false_negative=length(find(class_id(classhat==-1)==2));
@@ -67,6 +67,24 @@ figure
 plot(C,classLoss)
 xlabel('Box constraint');
 ylabel('classLoss');
+
+% 
+% %% visualizing support vectorz
+% 
+% [COEFF, SCORE] = pca(y,'NumComponents',3);
+% y_pca=SCORE*COEFF';
+% 
+% 
+% Mdl=fitcsvm(y_pca,class_id,'BoxConstraint',3.0,'KernelFunction','gaussian');
+% 
+% sv = Mdl.SupportVectors;
+% figure
+% gscatter(y_pca(:,1),y_pca(:,2),class_id)
+% hold on
+% plot(sv(:,1),sv(:,2),'ko','MarkerSize',10)
+% legend('versicolor','virginica','Support Vector')
+% hold off
+% 
 
 % figure
 % hold on

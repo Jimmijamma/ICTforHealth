@@ -99,6 +99,15 @@ yval = y.eval(feed_dict=input_data,session=sess)
 for i in range (0,N):
     decisions[i]=np.argmax(yval[i])
     
+hist, bins = np.histogram((class_id-decisions), bins=50)
+width = 0.7 * (bins[1] - bins[0])
+center = (bins[:-1] + bins[1:]) / 2
+plt.bar(center, hist, align='center', width=width)
+plt.xlabel('Squared error')
+plt.title('Error distribution with learning rate '+str(learning_rate))
+plt.savefig('squared_error_16classes'+ str(learning_rate)+'.png',format='png')
+plt.show()
+    
 n_strike = float((decisions == class_id-1).sum())
 p_strike = 100.0*n_strike/N
         

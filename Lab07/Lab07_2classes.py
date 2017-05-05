@@ -95,17 +95,38 @@ hist, bins = np.histogram((class_id-yval), bins=50)
 width = 0.7 * (bins[1] - bins[0])
 center = (bins[:-1] + bins[1:]) / 2
 plt.bar(center, hist, align='center', width=width)
-plt.xlabel('squared error')
-plt.title('learning rate '+str(learning_rate))
-plt.savefig('squared_error_2hn'+ str(learning_rate)+'.pdf',format='pdf')
+plt.xlabel('Squared error')
+plt.title('Error distribution with learning rate '+str(learning_rate))
+plt.savefig('squared_error_2classes'+ str(learning_rate)+'.png',format='png')
 plt.show()
 
 
 n_strike = float((yval == class_id).sum())
 p_strike = 100.0*n_strike/N
-p_true_positive = float(((yval >= 1) & (class_id >= 1)).sum())/n_ill
-p_true_negative = float(((yval == 0) & (class_id == 0)).sum())/n_healthy
-p_false_positive = float(((yval >= 1) & (class_id == 0)).sum())/n_healthy
-p_false_negative = float(((yval == 0) & (class_id >= 1)).sum())/n_ill
+p_true_positive = float(100*((yval >= 1) & (class_id >= 1)).sum())/n_ill
+p_true_negative = float(100*((yval == 0) & (class_id == 0)).sum())/n_healthy
+p_false_positive = float(100*((yval >= 1) & (class_id == 0)).sum())/n_healthy
+p_false_negative = float(100*((yval == 0) & (class_id >= 1)).sum())/n_ill
+                        
 
+                        
+plt.figure(figsize=(13,6))
+index = np.arange(0,1,1)
+                        
+bars0 = [p_strike]
+bars1 = [p_true_positive]
+bars2 = [p_true_negative]
+bars3 = [p_false_negative]
+bars4 = [p_false_positive]
+
+                        
+plt.bar(index, bars0, 0.14, label="Strike Probability", color="black")
+plt.bar(index + 0.14, bars1, 0.14, label="True Positive", color="blue")
+plt.bar(index + 0.28, bars2, 0.14, label="True Negative", color="red")
+plt.bar(index + 0.42, bars3, 0.14, label="False negative", color="green")
+plt.bar(index + 0.56, bars4, 0.14, label="False positive", color="orange")
+plt.title("Binary classification results")
+plt.xlabel("Performance indicators")
+plt.ylabel("Probability (%)")
+plt.legend(loc=0, framealpha=0.7)   
 

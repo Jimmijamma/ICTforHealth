@@ -13,11 +13,11 @@ load('ESTEMITo.mat');
 load('ESTTRu.mat');
 load('ESTEMITu.mat');
 
-load('ta.mat');
-load('te.mat');
-load('ti.mat');
-load('to.mat');
-load('tu.mat');
+load('za.mat');
+load('ze.mat');
+load('zi.mat');
+load('zo.mat');
+load('zu.mat');
 % 
 % Kquant=16
 % 
@@ -76,6 +76,13 @@ load('tu.mat');
 % delta=(amax-amin)/(Kquant-1);%quantization interval
 % tu=round((tu-amin)/delta)+1;%quantized signal
 % save('tu.mat','tu');
+
+
+ta=za(:,5);
+te=ze(:,5);
+ti=zi(:,5);
+to=zo(:,5);
+tu=zu(:,5);
 
 
 [PSTATESaa,logpseqaa] = hmmdecode(ta',ESTTRa,ESTEMITa);

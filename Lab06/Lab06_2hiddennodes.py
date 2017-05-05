@@ -30,7 +30,7 @@ x_norm=np.delete(x_norm, [1-1,4-1,6-1,FEATURE-1], 1) # deleting some unused feat
 
 # initializing the neural network graph
 tf.set_random_seed(1234)
-learning_rate = 1e-5
+learning_rate = 1e-4
 n_hidden_nodes_1=F
 n_hidden_nodes_2=10
         
@@ -90,20 +90,20 @@ print np.shape(yval)
 
 plt.plot(regressand,'r', label='regressand')
 plt.plot(yval,'b', label='regression')
-plt.xlabel('case number')
+plt.xlabel('Input entries')
 plt.grid(which='major', axis='both')
 plt.legend()
-plt.title('learning rate '+str(learning_rate))
-plt.savefig('yval_vd_ytrue_2hn.pdf',format='pdf')
+plt.title('Regression results with learning rate '+str(learning_rate))
+plt.savefig('yval_vd_ytrue_2hn_5.jpg',format='jpg')
 plt.show()
 
 hist, bins = np.histogram((regressand-yval), bins=50)
 width = 0.7 * (bins[1] - bins[0])
 center = (bins[:-1] + bins[1:]) / 2
 plt.bar(center, hist, align='center', width=width)
-plt.xlabel('squared error')
-plt.title('learning rate '+str(learning_rate))
-plt.savefig('squared_error_2hn'+ str(learning_rate)+'.pdf',format='pdf')
+plt.xlabel('Squared error')
+plt.title('Error distribution with learning rate '+str(learning_rate))
+plt.savefig('squared_error_2hn_5'+ str(learning_rate)+'.jpg',format='jpg')
 plt.show()
 
 

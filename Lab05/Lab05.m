@@ -1,10 +1,10 @@
+%% Data Preparation
+
 clear all
 close all
 clc
 
 load('ckd3.mat');
-
-%% ----------- Data Preparation ------------ %%
 
 keylist={'normal','abnormal','present','notpresent','yes','no','good','poor','ckd','notckd','?',''};
 keymap=[0,1,0,1,0,1,0,1,2,1,NaN,NaN];
@@ -39,7 +39,7 @@ n_healthy=sum(classes==1);
 n_ill=sum(classes==2);
 
 
-%% ---------- Hierachical Clustering ---------- %%
+%% Hierachical Clustering
 
 D=pdist(X); % algorithm that evaluates the distance between each 
             % measurement stored in the matrix
@@ -52,14 +52,6 @@ K=2; % selecting the number of clusters we want to consider
 
     % we create the hierachical tree
 T=cluster(Z,'maxclust',K);
-    % The output matrix Z contains cluster information. Z has size m-1 by 3
-    % where m is the number of observations in the original data. Each newly-formed
-    % cluster, corresponding to Z(i,:), is assigned the index m+i, where m is
-    % the total number of initial leaves. Z(i,1:2) contains the indices of
-    % the two component clusters which form cluster m+i. There are m-1 higher
-    % clusters which correspond to the interior nodes of the output
-    % clustering tree. Z(i,3) contains the corresponding linkage distances
-    % between the two clusters which are merged in Z(i,:).
 
 p=0;
 figure
@@ -114,7 +106,7 @@ end
 SSE=SSE_1+SSE_2;
 
 
-%% --------- Classification Tree ---------- %%
+%% Classification Tree 
 
 % R_x=X'*X/N;
 % [U, E] = eig(R_x);
